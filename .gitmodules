@@ -1,0 +1,6 @@
+[submodule "modules"]
+	path = modules
+	url = https://github.com/UQ-RCC/terraform-modules.git
+[submodule "nimrod-portal/modules"]
+	path = nimrod-portal/modules
+	url = https://github.com/UQ-RCC/terraform-modules.git
