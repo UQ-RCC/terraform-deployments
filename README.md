@@ -9,6 +9,7 @@ Please see each individual deployment's README for instructions.
 | Name             | Description   |
 | ---------------- | ------------- |
 | nimrod-portal    | Nimrod Portal |
+| imbportal-legacy | Legacy IMB Portal |
 
 ## License
 This project is licensed under the [Apache License, Version 2.0](https://opensource.org/licenses/Apache-2.0):
