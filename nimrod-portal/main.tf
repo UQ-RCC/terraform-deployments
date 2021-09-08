@@ -1,8 +1,7 @@
 terraform {
   backend "swift" {
-    container         = "app-states"
-    archive_container = "app-states-archive"
-    state_name        = "nimrod-portal.tfstate"
+    container         = "app-state-nimrod-portal"
+    archive_container = "app-state-nimrod-portal-archive"
   }
 
   required_providers {
