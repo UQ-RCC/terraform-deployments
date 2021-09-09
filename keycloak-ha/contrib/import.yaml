@@ -1,0 +1,83 @@
+##
+# One-shot pod to import a KeyCloak dump into a cluster.
+# Expects:
+# - the dump JSON blob is stored in a secret called keycloak-import-dump with the key dump.json
+# - dump.json to be mounted at /export
+#
+# kubectl --context=rcc-k8s-prod -nkeycloak create secret generic keycloak-import-dump --from-file=dump.json=auth-rcc-dump.json
+#
+# NB: Make sure firewall rules allow LDAP/AD access, it will hang the entire cluster and crash
+# during the import otherwise.
+##
+apiVersion: v1
+kind: Pod
+metadata:
+  name: keycloak-import
+  labels:
+    app: keycloak
+spec:
+  containers:
+  - name: keycloak
+    image: jboss/keycloak:15.0.2
+    env:
+    - name: DB_VENDOR
+      value: postgres
+    - name: DB_ADDR
+      value: keycloak-db
+    - name: DB_DATABASE
+      value: keycloak
+    - name: DB_USER
+      value: keycloak
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: keycloak-db-password
+          optional: false
+    - name: KEYCLOAK_FRONTEND_URL
+      value: https://keycloak.prod.rcc-k8s.cloud.edu.au/auth
+    - name: PROXY_ADDRESS_FORWARDING
+      value: "true"
+    - name: KEYCLOAK_USER
+      valueFrom:
+        secretKeyRef:
+          key: username
+          name: keycloak-admin-credentials
+          optional: false
+    - name: KEYCLOAK_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: keycloak-admin-credentials
+          optional: false
+    - name: JAVA_OPTS_APPEND
+      value: >
+        -Dkeycloak.profile.feature.docker=enabled
+        -Dkeycloak.migration.action=import
+        -Dkeycloak.migration.strategy=OVERWRITE_EXISTING
+        -Dkeycloak.migration.provider=singleFile
+        -Dkeycloak.migration.file=/export/dump.json
+    - name: JGROUPS_DISCOVERY_PROTOCOL
+      value: kubernetes.KUBE_PING
+    - name: JGROUPS_DISCOVERY_PROPERTIES
+      value: port_range=0,dump_requests=false
+    - name: KUBERNETES_NAMESPACE
+      value: keycloak
+    - name: KUBERNETES_LABELS
+      value: app=keycloak
+    volumeMounts:
+      - mountPath: /export
+        name: keycloak-import-dump
+  restartPolicy: Never
+  securityContext:
+    fsGroup: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    runAsUser: 1000
+  automountServiceAccountToken: true
+  serviceAccount: keycloak-kubeping-service-account
+  serviceAccountName: keycloak-kubeping-service-account
+  volumes:
+    - name: keycloak-import-dump
+      secret:
+        secretName: keycloak-import-dump
