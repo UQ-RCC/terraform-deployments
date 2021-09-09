@@ -51,7 +51,7 @@ module "imbportal-legacy" {
   }], terraform.workspace == "prod" ? [{
     domain      = "imbmicroscopy.rcc.uq.edu.au"
     issuer_kind = "Issuer"
-    issuer_name = "letsencrypt-prod-imbmicroscopy"
+    issuer_name = "imbmicroscopy-rcc-issuer"
   }] : [])
 
   client_oauth2 = var.client_oauth2
