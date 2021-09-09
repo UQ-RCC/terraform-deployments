@@ -44,6 +44,9 @@ module "nimrod-portal" {
   app       = "portal"
   namespace = "nimrod-portal"
 
+  # Set this to disable the frontend for maintenance
+  #frontend_image = "uqrcc/nimrod-portal-maint:1.0.0"
+
   rs_jwt_config = var.rs_jwt_config
 
   rs_remote_host = "tinaroo.rcc.uq.edu.au"

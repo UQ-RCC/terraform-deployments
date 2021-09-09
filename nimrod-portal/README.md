@@ -36,6 +36,7 @@ $ docker load < $(nix-build -A containers.container-name)
 `container-name` may be substituted with one of the following:
 
 * `nimrod-portal`
+* `nimrod-portal-maint`
 * `nimrod-portal-backend`
 * `portal-client`
 * `portal-resource-server`
