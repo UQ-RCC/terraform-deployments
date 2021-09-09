@@ -40,6 +40,9 @@ module "imbportal-legacy" {
 
   db_root_password = random_password.db-root-password.result
 
+  replicas_client   = terraform.workspace == "prod" ? 3 : 1
+  replicas_frontend = terraform.workspace == "prod" ? 3 : 1
+
   frontend_domains = concat([{
     # NB: There's only one domain, so hanging it off the top is fine
     domain      = "imbmicroscopy.${terraform.workspace}.rcc-k8s.cloud.edu.au"
