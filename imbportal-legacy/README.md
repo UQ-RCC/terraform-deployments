@@ -36,6 +36,7 @@ $ docker load < $(nix-build -A containers.container-name)
 `container-name` may be substituted with one of the following:
 
 * `ipp_1_1`
+* `ipp-maint`
 
 ## Screenshot
 
