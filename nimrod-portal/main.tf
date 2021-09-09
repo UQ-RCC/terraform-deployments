@@ -67,7 +67,7 @@ module "nimrod-portal" {
     issuer_kind = "ClusterIssuer"
   }], terraform.workspace == "prod" ? [{
     domain      = "nimrod.rcc.uq.edu.au"
-    issuer_name = "letsencrypt-prod-nimrod"
+    issuer_name = "nimrod-rcc-issuer"
     issuer_kind = "Issuer"
   }] : [])
 
