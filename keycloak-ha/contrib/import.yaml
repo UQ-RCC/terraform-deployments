@@ -1,14 +1,31 @@
 ##
 # One-shot pod to import a KeyCloak dump into a cluster.
-# Expects:
-# - the dump JSON blob is stored in a secret called keycloak-import-dump with the key dump.json
-# - dump.json to be mounted at /export
+# Expects dump.json to be mounted at /export
 #
-# kubectl --context=rcc-k8s-prod -nkeycloak create secret generic keycloak-import-dump --from-file=dump.json=auth-rcc-dump.json
+# kubectl --context=rcc-k8s-prod -nkeycloak apply -f import.yaml
 #
 # NB: Make sure firewall rules allow LDAP/AD access, it will hang the entire cluster and crash
 # during the import otherwise.
 ##
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-import-scripts
+data:
+  # https://keycloak.discourse.group/t/keycloak-timeout-issue/2309
+  10-fix-timeout.cli: |
+    embed-server --server-config=standalone.xml --std-out=echo
+    echo Changing transaction default timeout
+    /subsystem=transactions/:write-attribute(name=default-timeout,value=86400)
+    echo Done
+    stop-embedded-server
+  20-fix-timeout-ha.cli: |
+    embed-server --server-config=standalone-ha.xml --std-out=echo
+    echo Changing transaction default timeout
+    /subsystem=transactions/:write-attribute(name=default-timeout,value=86400)
+    echo Done
+    stop-embedded-server
+---
 apiVersion: v1
 kind: Pod
 metadata:
@@ -16,9 +33,18 @@ metadata:
   labels:
     app: keycloak
 spec:
+  nodeName: prod-worker-06
+  volumes:
+    - name: kcdump
+      hostPath:
+        path: /home/ubuntu/kc
+        type: Directory
+    - name: startup-scripts
+      configMap:
+        name: keycloak-import-scripts
   containers:
   - name: keycloak
-    image: jboss/keycloak:15.0.2
+    image: uqrcc/keycloak-rcc:15.0.2
     env:
     - name: DB_VENDOR
       value: postgres
@@ -57,6 +83,7 @@ spec:
         -Dkeycloak.migration.strategy=OVERWRITE_EXISTING
         -Dkeycloak.migration.provider=singleFile
         -Dkeycloak.migration.file=/export/dump.json
+        -Djboss.as.management.blocking.timeout=86400
     - name: JGROUPS_DISCOVERY_PROTOCOL
       value: kubernetes.KUBE_PING
     - name: JGROUPS_DISCOVERY_PROPERTIES
@@ -67,7 +94,9 @@ spec:
       value: app=keycloak
     volumeMounts:
       - mountPath: /export
-        name: keycloak-import-dump
+        name: kcdump
+      - mountPath: /opt/jboss/startup-scripts
+        name: startup-scripts
   restartPolicy: Never
   securityContext:
     fsGroup: 1000
@@ -77,7 +106,4 @@ spec:
   automountServiceAccountToken: true
   serviceAccount: keycloak-kubeping-service-account
   serviceAccountName: keycloak-kubeping-service-account
-  volumes:
-    - name: keycloak-import-dump
-      secret:
-        secretName: keycloak-import-dump
+
