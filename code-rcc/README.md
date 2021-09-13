@@ -23,6 +23,11 @@
    $ terraform apply -var-file=secrets.tfvars
    ```
 
+To obtain the Gitea admin password:
+```
+$ terraform output gitea_admin_password
+```
+
 ## Screenshot
 
 ![code.rcc](screenshot.png)
