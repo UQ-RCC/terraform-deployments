@@ -39,7 +39,7 @@ module "imbportal-legacy" {
   wwi_target = "wwi-test.qbi.uq.edu.au"
 
   # Set this to disable the frontend for maintenance
-  #frontend_image = "uqrcc/ipp-maint:1.0.0"
+  frontend_image = "uqrcc/ipp-maint:1.0.0"
 
   db_root_password = random_password.db-root-password.result
 
