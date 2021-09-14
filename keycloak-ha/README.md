@@ -2,12 +2,12 @@
 
 ## Instructions
 
-1. Update modules and init Terraform
+1. Source your OpenStack RC file
+2. Update modules and init Terraform
    ```
    $ git submodule update --init
    $ terraform init
    ```
-2. Source your OpenStack RC file
 3. Make sure your kubeconfig is configured with three contexts:
    * `rcc-k8s-dev`
    * `rcc-k8s-test`
