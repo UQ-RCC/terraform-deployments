@@ -45,7 +45,7 @@ module "nimrod-portal" {
   namespace = "nimrod-portal"
 
   # Set this to disable the frontend for maintenance
-  #frontend_image = "uqrcc/nimrod-portal-maint:1.0.0"
+  frontend_image = "uqrcc/nimrod-portal-maint:1.0.0"
 
   rs_jwt_config = var.rs_jwt_config
 
