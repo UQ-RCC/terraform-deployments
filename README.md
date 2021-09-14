@@ -12,6 +12,7 @@ Please see each individual deployment's README for instructions.
 | imbportal-legacy | Legacy IMB Portal |
 | keycloak-ha      | Keycloak configured in HA mode |
 | code-rcc         | Gitea instance for RCC |
+| ais-xnat         | AIS XNAT |
 
 ## License
 This project is licensed under the [Apache License, Version 2.0](https://opensource.org/licenses/Apache-2.0):
