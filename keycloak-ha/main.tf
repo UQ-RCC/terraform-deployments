@@ -50,8 +50,7 @@ module "keycloak" {
 
   keycloak_admin_user = "admin"
   keycloak_admin_pass = random_password.keycloak_admin_password.result
-  #keycloak_domain     = terraform.workspace == "prod" ? "auth.rcc.uq.edu.au" : "keycloak.${terraform.workspace}.rcc-k8s.cloud.edu.au"
-  keycloak_domain     ="keycloak.${terraform.workspace}.rcc-k8s.cloud.edu.au"
+  keycloak_domain     = terraform.workspace == "prod" ? "auth.rcc.uq.edu.au" : "keycloak.${terraform.workspace}.rcc-k8s.cloud.edu.au"
   keycloak_domains = concat([{
     domain = "keycloak.${terraform.workspace}.rcc-k8s.cloud.edu.au"
     issuer_kind = "ClusterIssuer"
